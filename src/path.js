@@ -51,28 +51,34 @@ const searchRoutesMds = (route) => {
 
 
 
-const readOneMd = (fileMd) => {
+const readOneMd = (arrayFileMd) => {
   const arrayLinks = [];
   return new Promise((resolve, reject) => {
-    fs.readFile(fileMd, 'UTF-8', (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        const renderer = new marked.Renderer();
-        renderer.link = (href, title, text) => {
-          const infoLinks = {
-            href: link,
-            title: text,
-            file: fileMd,
+    arrayFileMd.forEach((fileMd)=>{
+      fs.readFile(fileMd, 'UTF-8', (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          const renderer = new marked.Renderer();
+          renderer.link = (href, title, text) => {
+            const infoLinks = {
+              'href': href,
+              'file': fileMd,
+              'text': text
+            };
+            // console.log(infoLinks,69);
+            if (infoLinks.href.includes('http')) {
+              arrayLinks.push(infoLinks);
+              // console.log(arrayLinks,72);
+              resolve(arrayLinks);
+            }
           };
-          if (infoLinks.href.includes('http')) {
-            arrayLinks.push(infoLinks);
-          }
-        };
-        marked.marked(data, { renderer });
-      }
-    });
-    resolve(arrayLinks);
+          marked.marked(data, { renderer });
+        }
+      });
+    })
+   
+    
   });
 };
 
@@ -94,28 +100,29 @@ const linkValidate = (id, url) =>
       .catch(() => resolve({ id, status: 404, statusText: 'fail' }))
   );
 // new Promise((resolve, reject)=>{})
-const resolveValidate = (links, route) => {
-  console.log(links, route,98);
-  links.forEach(({ id, href }) =>
-    linksValidatePromises.push(linkValidate(id, href))
-  );
-  Promise.all(linksValidatePromises)
-    .then((stats) => {
-      resolve(
-        links.map((link) => ({
-          ...link,
-          ...stats.find(({ id }) => id === link.id),
-        }))
-      );
-    })
-    .catch(() => reject(new Error(`There are no valid links ${route}`)));
-};
+// const resolveValidate = (links, route) => {
+//   console.log(links, route,98);
+//   links.forEach(({ id, href }) =>
+//     linksValidatePromises.push(linkValidate(id, href))
+//   );
+//   Promise.all(linksValidatePromises)
+//     .then((stats) => {
+//       resolve(
+//         links.map((link) => ({
+//           ...link,
+//           ...stats.find(({ id }) => id === link.id),
+//         }))
+//       );
+//     })
+//     .catch(() => reject(new Error(`There are no valid links ${route}`)));
+// };
 
 isPathExist(routeTerminal);
 isPathAbsolute(routeTerminal);
-console.log(searchRoutesMds(routeTerminal));
+console.log(searchRoutesMds(routeTerminal),119);
 // readArrayRoutsMd(searchRoutesMds(routeTerminal)).then(res => console.log('resultado de los links; ', res))
 // readRouts(argsTerminal[2]);
+readOneMd(searchRoutesMds(routeTerminal)).then((arrayLinks)=>{console.log(arrayLinks,125)})
 
 module.exports = {
   isPathExist,
@@ -123,7 +130,7 @@ module.exports = {
   searchRoutesMds,
   readOneMd,
   linkValidate,
-  resolveValidate,
+  // resolveValidate,
   // readArrayRoutsMd,
 }
 
