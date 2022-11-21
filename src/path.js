@@ -4,6 +4,7 @@ const marked = require('marked');
 const fetch = require('node-fetch');
 const argsTerminal = process.argv
 const routeTerminal = process.argv[2]
+const axios = require('axios')
 
 const isPathExist = (route) => {
   if (!fs.existsSync(route)) {
@@ -82,23 +83,41 @@ const readOneMd = (arrayFileMd) => {
   });
 };
 
-// function fixArrayObjects(MDfileSet) {
-//   let arrayPromises = [];
-//   arrayPromises = MDfileSet.map((element) => {
-//     return getLinks(element)
-//   });
-//   return Promise.all(arrayPromises).then((res) => res.flat());
-// };
+ function fixArrayObjects(MDfileSet) {
+ let arrayPromises = [];
+ arrayPromises = MDfileSet.map((element) => {
+return getLinks(element)
+ });
+ return Promise.all(arrayPromises).then((res) => res.flat());
+};
 
 
-const linkValidate = (id, url) =>
-  new Promise((resolve) =>
-    axios(url)
-      .then((res) =>
-        resolve({ id, status: res.status, statusText: res.statusText })
-      )
-      .catch(() => resolve({ id, status: 404, statusText: 'fail' }))
-  );
+const linkValidate = (arrayLinks) =>{
+  return new Promise ((resolve, reject)=>{
+ // console.log(arrayLinks,96);
+ arrayLinks.forEach((obj)=>{
+  // console.log(obj,98);
+  axios.get(obj.href).then((response)=>{
+     //console.log(response,101)
+    obj.status = response.status,
+    obj.ok = '✔'
+    console.log(obj,102);
+
+  }).catch((error)=>{
+    console.log(error.message);
+  })
+
+})
+  })
+ 
+} 
+  // new Promise((resolve) =>
+  //   axios(url)
+  //     .then((res) =>
+  //       resolve({ id, status: res.status, statusText: res.statusText })
+  //     )
+  //     .catch(() => resolve({ id, status: 404, statusText: 'fail' }))
+  // );
 // new Promise((resolve, reject)=>{})
 // const resolveValidate = (links, route) => {
 //   console.log(links, route,98);
@@ -122,7 +141,9 @@ isPathAbsolute(routeTerminal);
 console.log(searchRoutesMds(routeTerminal),119);
 // readArrayRoutsMd(searchRoutesMds(routeTerminal)).then(res => console.log('resultado de los links; ', res))
 // readRouts(argsTerminal[2]);
-readOneMd(searchRoutesMds(routeTerminal)).then((arrayLinks)=>{console.log(arrayLinks,125)})
+readOneMd(searchRoutesMds(routeTerminal)).then((arrayLinks)=>{
+  // console.log(arrayLinks,125)
+linkValidate(arrayLinks)})
 
 module.exports = {
   isPathExist,
