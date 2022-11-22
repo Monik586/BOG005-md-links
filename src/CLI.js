@@ -1,38 +1,32 @@
-/*
-  . arguments('path')
-  . option('-v, --validate', 'validate the broken links') 
-  . option('-s, --stats', 'calculates the stats of the links') 
-  . action(mdLinks)
-  . parse(process.argv);
-*/
-/*const option = {
-validate: program.validate,
-stats: program.stats
-};
-const route = program.args[0];*/
+// leer los comandos de la terminal para poder decidir que cosa se le muestra al usuario
+// solo utiliza mdl y la funcioon stats y broken
 
-/*const option = {
-    validate: true,
-    stats: false,
-}
-/*const route ="C:\Users\monic\BOGOO5-mdl-28\BOG005-md-links\pruebas\readme.md";
-if (!route) {
-  console.log('enter a path');
-} else {
-  mdLinks(route, option)
-    .then(arrLinks => {
-      if (arrLinks.length === 0) {
-        console.log('No links to show');
-      } else if (option.validate && option.stats) {
-        console.log(`Total: ${totalLinks(arrLinks)} \nUnique: ${uniqueLinks(arrLinks)}  \nBroquen: ${brokenLinks(arrLinks)}`);
-      } else if (option.stats) {
-        console.log(`Total: ${totalLinks(arrLinks)}  \nUnique: ${uniqueLinks(arrLinks)}`);
-      } else if (option.validate) {
-        arrLinks.forEach(element =>
-          console.log(`${element.file}  ${element.href}  ${element.status}  ${element.statusText}  ${element.text}`));
-      } else {
-        arrLinks.forEach(element =>
-          console.log(`${element.file}  ${element.href}  ${element.text}`));
-      }
-    }).catch(err => (err));
-};*/
+const { mdLinks } = require(".");
+const { stats, broken } = require("./statsBroken");
+const rutaTerminal = process.argv[2]
+const opciones = process.argv
+
+console.log('opciones: ', opciones);
+
+//cuando se ingresa solo la ruta
+mdLinks(rutaTerminal)
+    .then(resp => console.log(resp, 'solo ruta'))
+    .catch(err => console.log(err));
+
+
+//cuando se ingresa la ruta y validate
+mdLinks(rutaTerminal, {validate:true})
+    .then(resp => console.log(resp, 'ruta y validate'))
+    .catch(err => console.log(err));
+
+//cuando se ingresa validate y stats
+mdLinks(rutaTerminal, { validate: true })
+    .then(resp => console.log('validate y stats: ', broken(resp)))
+    .catch(err => console.log(err));
+
+
+//cuando se ingresa solo stats
+mdLinks(rutaTerminal)
+    .then(resp => console.log('SOLO STATS: ', stats(resp)))
+    .catch(err => console.log(err));
+

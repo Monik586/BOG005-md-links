@@ -1,30 +1,39 @@
 const path = require('path');
 const fs = require('fs');
 const marked = require('marked');
-const fetch = require('node-fetch');
-const argsTerminal = process.argv
-const routeTerminal = process.argv[2]
+// const fetch = require('node-fetch');
+// const argsTerminal = process.argv
+// const routeTerminal = process.argv[2]
 const axios = require('axios')
 
-const isPathExist = (route) => {
-  if (!fs.existsSync(route)) {
-    console.log('Path does not exist')
-  } else {
-    console.log('path exists.')
-  }
-};
+// const isPathExist = (route) => {
+//   if (!fs.existsSync(route)) {
+//     console.log('Path does not exist')
+//   } else {
+//     console.log('path exists.')
+//   }
+// };
 
+/**
+ * 
+ * @param {string} route 
+ * @returns string de ruta convertida
+ */
 const isPathAbsolute = (route) => {
   if (!path.isAbsolute(route)) {
-    console.log('The path is relative')
-    console.log('Pathname is absolute ', path.resolve(route))
+    // console.log('The path is relative')
+    // console.log('Pathname is absolute ', path.resolve(route))
     return path.resolve(route)
   } else {
-    console.log('is absolute')
+    // console.log('is absolute')
     return param
   }
 };
-
+/**
+ * 
+ * @param {string} route 
+ * @returns array de strings las rutas md
+ */
 const searchRoutesMds = (route) => {
   let arrayMds = [];
   if (fs.statSync(route).isFile() === true) {
@@ -44,8 +53,13 @@ const searchRoutesMds = (route) => {
   // console.log(arrayMds);
   return arrayMds.filter(ele => path.extname(ele) === '.md')
 };
-
-const readOneMd = (arrayFileMd) => {
+/**
+ * 
+ * @param {array} arrayFileMd 
+ * @returns promesa de array de objetos
+ * href,file,text
+ */
+const readAllMd = (arrayFileMd) => {
   const arrayLinks = [];
   return new Promise((resolve, reject) => {
     arrayFileMd.forEach((fileMd) => {
@@ -84,17 +98,24 @@ return getLinks(element)
  return Promise.all(arrayPromises).then((res) => res.flat());
 };*/
 
-
+/**
+ * 
+ * @param {array} arrayLinks
+ * array de objetos href,file,text 
+ * @returns promesa resuelta
+ * array de objetos modificado
+ * href,file,text,status,ok
+ */
 const linkValidate = (arrayLinks) => {
   let arrayLinksMod = arrayLinks.map((obj) => {
     return axios.get(obj.href).then((response) => {
       obj.status = response.status,
-        obj.ok = '✔'
+      obj.ok = '✔'
       //console.log(obj, 102);
       return obj;
     }).catch((error) => {
       obj.status = 404;
-      obj.mensaje = "Fail";
+      obj.ok = "Fail";
       return obj;
     });
   })
@@ -119,16 +140,22 @@ const linkValidate = (arrayLinks) => {
 //     .catch(() => reject(new Error(`There are no valid links ${route}`)));
 // };
 
-
+/*isPathExist(routeTerminal);
+isPathAbsolute(routeTerminal);
+console.log(searchRoutesMds(routeTerminal), 119);
+// readArrayRoutsMd(searchRoutesMds(routeTerminal)).then(res => console.log('resultado de los links; ', res))
+// readRouts(argsTerminal[2]);
+readAllMd(searchRoutesMds(routeTerminal)).then((arrayLinks) => {
+  // console.log(arrayLinks,125)
+  (linkValidate(arrayLinks)).then(res => console.log(res)) 
+})*/
 
 module.exports = {
-  isPathExist,
+  // isPathExist,
   isPathAbsolute,
   searchRoutesMds,
-  readOneMd,
+  readAllMd,
   linkValidate,
-  // resolveValidate,
-  // readArrayRoutsMd,
 }
 
 
