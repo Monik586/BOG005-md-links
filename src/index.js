@@ -1,8 +1,5 @@
 const { isPathAbsolute, searchRoutesMds, linkValidate, readAllMd } = require("./funcionesPuras")
 
-
-
-
 const mdLinks = (path, options = { validate: false }) => {
   return new Promise((resolve, reject) => {
     const absolutePaht = isPathAbsolute(path)
@@ -21,6 +18,7 @@ const mdLinks = (path, options = { validate: false }) => {
 
 }
 
-
-
-module.exports = {mdLinks}
+module.exports = {
+  mdLinks,
+  
+}
