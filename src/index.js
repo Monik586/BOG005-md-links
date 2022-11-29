@@ -1,4 +1,4 @@
-const { isPathAbsolute, searchRoutesMds, linkValidate, readAllMd } = require("./funcionesPuras")
+const { isPathAbsolute, searchRoutesMds, linkValidate, readAllMd } = require('../src/funcionesPuras')
 
 const mdLinks = (path, options = { validate: false }) => {
   return new Promise((resolve, reject) => {
@@ -6,12 +6,12 @@ const mdLinks = (path, options = { validate: false }) => {
     const arrayMds = searchRoutesMds(absolutePaht)
     if (options.validate) {
       readAllMd(arrayMds)
-      .then((arrayLinks) => linkValidate(arrayLinks)
-      .then(res => resolve(res)))
+        .then((arrayLinks) => linkValidate(arrayLinks)
+          .then(res => resolve(res)))
 
     } else {
       readAllMd(arrayMds)
-      .then((arrayLinks) => resolve(arrayLinks))
+        .then((arrayLinks) => resolve(arrayLinks))
 
     }
   })
@@ -20,5 +20,5 @@ const mdLinks = (path, options = { validate: false }) => {
 
 module.exports = {
   mdLinks,
-  
+
 }

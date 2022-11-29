@@ -10,12 +10,12 @@ const axios = require('axios')
  */
 const isPathAbsolute = (route) => {
   if (!path.isAbsolute(route)) {
-        return path.resolve(route)
+    return path.resolve(route)
   } else {
-    
     return param
   }
 };
+
 /**
  * 
  * @param {string} route 
@@ -27,7 +27,7 @@ const searchRoutesMds = (route) => {
     arrayMds.push(route)
   } else {
     const elementos = fs.readdirSync(route);
-        elementos.forEach((elementoName) => {
+    elementos.forEach((elementoName) => {
       let childRoute = path.join(route, elementoName)
       if (fs.statSync(childRoute).isDirectory()) {
         arrayMds = arrayMds.concat(searchRoutesMds(childRoute));
@@ -36,9 +36,10 @@ const searchRoutesMds = (route) => {
       }
     });
   }
-  
+
   return arrayMds.filter(ele => path.extname(ele) === '.md')
 };
+
 /**
  * 
  * @param {array} arrayFileMd 
@@ -60,10 +61,10 @@ const readAllMd = (arrayFileMd) => {
               'file': fileMd,
               'text': text
             };
-            
+
             if (infoLinks.href.includes('http')) {
               arrayLinks.push(infoLinks);
-              
+
               resolve(arrayLinks);
             }
           };
@@ -84,24 +85,28 @@ const readAllMd = (arrayFileMd) => {
  * href,file,text,status,ok
  */
 const linkValidate = (arrayLinks) => {
+
   let arrayLinksMod = arrayLinks.map((obj) => {
-    return axios.get(obj.href).then((response) => {
-      obj.status = response.status,
-      obj.ok = '✔'
-      return obj;
-    }).catch((error) => {
-      obj.status = 404;
-      obj.ok = "Fail";
-      return obj;
-    });
+    return axios.get(obj.href)
+      .then((response) => {
+        obj.status = response.status,
+          obj.ok = '✔'
+        return obj;
+      }).catch((error) => {
+        obj.status = 404;
+        obj.ok = "Fail";
+        return obj;
+      });
   })
   return Promise.all(arrayLinksMod).then(res => res);
 }
 module.exports = {
+
   isPathAbsolute,
   searchRoutesMds,
   readAllMd,
   linkValidate,
+
 }
 
 
