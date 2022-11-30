@@ -1,10 +1,10 @@
 {
-  "name": "md-links",
+  "name": "mdlinks-moni586",
   "version": "0.1.0",
   "engines": {
     "node": ">=14.x"
   },
-  "bin": {"mdLinks": "cli.js"
+  "bin": {"md-Links": "cli.js"
   },
   
   "dependencies": {
